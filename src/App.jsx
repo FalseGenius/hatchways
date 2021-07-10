@@ -55,12 +55,18 @@ const showGrades = (grades) => {
   ));
 };
 
+
 function App() {
 
   const [fetchUserData, setfetchUserData] = useState('');
   const [userInfo, setUserInfo] = useState([]);
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
+  const [show, setShow] = useState({
+    bool: false,
+    ide: Number,
+    plus: '+'
+  });
 
   useEffect(() => {
     fetchRandomData().then(randomData => {
@@ -69,7 +75,6 @@ function App() {
       setSearchResult(randomData.students);
     })
   }, [])
-
 
   const handleChange = (event) => {
     let value = event.target.value;
@@ -85,6 +90,10 @@ function App() {
     }
   };
 
+  const handleTag = (event) => {
+    console.log(event.target.value);
+  }
+
   return (
     <>
 
@@ -98,29 +107,53 @@ function App() {
             </div>
 
           </div>
+
+          <div className='tag'>
+            <input onChange={handleTag} type='text' placeholder='Search by tag'></input>
+          </div>
+
           <div>
+
             {
               searchResult.map((item: User, idx) => (
-                <div style={{marginBottom: '70px'}} key={idx}>
+                <div style={{marginBottom: '70px'}} >
 
                   <div style={{float: 'left', paddingTop: '50px'}}>
                     <img style={{margin: '20px', height: '160px', weight: '200px', border: '1px solid black', borderRadius: "50%", color: 'black'}} src={item.pic} />
                   </div>
-                  <button  style={{width: '30px', height: '30px' ,float: 'right', marginTop: '30px', border: 'none', backgroundColor: 'gray'}}>+</button>
+
+
+                    {show.bool
+                      ? <button id={{idx}} onClick={()=>setShow({bool: false})} style={{width: '30px', height: '30px' ,float: 'right', marginTop: '30px', border: 'none', backgroundColor: 'gray'}}>+</button>
+                      : <button id={{idx}} onClick={()=>setShow({bool: !show.bool, ide: idx, plus: '-'})} style={{width: '30px', height: '30px' ,float: 'right', marginTop: '30px', border: 'none', backgroundColor: 'gray'}}>{show.plus}</button>
+                    }
+
+
+
+
                   <div style={{display: 'inline-block'}}>
 
                     <p style={{fontWeight: '500', fontSize: '30px'}}>{getUserName(item)}</p>
                     <p>{otherDetails(item)}</p>
                     <p>{average(item.grades)}</p>
-                    <ul style={{listStyleType: 'none', padding: '0', margin: '0'}}>
-                      {item.grades.map((item, idx) => (
+                    <ul key={idx} style={{listStyleType: 'none', padding: '0', margin: '0'}}>
+                      {
+                        show.ide === idx ?
+
+                        item.grades.map((item, idx) => (
                         <li>{`Test ${idx+1}: ${parseInt(item)}%`}</li>
-                    ))}</ul>
+                        ))
+
+                        : null}
+                    </ul>
+
+
                   </div>
+
                   <hr style={{color: 'gray', marginTop: '23px'}} />
                 </div>
-
-                ))
+              )
+              )
             }
         </div>
       </div>
